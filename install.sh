@@ -81,11 +81,16 @@ prefix_length="$(echo $address | cut -d '/' -f 2)"
 cat << EOF > $mountpoint/etc/sysconfig/network-scripts/ifcfg-eth0
 DEVICE=eth0
 NAME=eth0
+
 BOOTPROTO=static
 ONBOOT=yes
+
 IPADDR=$address_ip
 PREFIX=$prefix_length
 GATEWAY=$gateway
+
+DNS1=1.1.1.1
+DNS2=8.8.8.8
 EOF
 
 echo "- setting hostname"
@@ -98,7 +103,8 @@ done
 
 echo "- setting root password"
 hash="$(python3 -c "import crypt; print(crypt.crypt('$root_password', crypt.mksalt(crypt.METHOD_SHA512)))")"
-sed -i "s;^root:.*;root:$hash:0:0:99999:7:::;" "$mountpoint/etc/shadow"
+days_since_epoch="$(($(date --utc +%s)/86400))"
+sed -i "s;^root:.*;root:$hash:$days_since_epoch:0:99999:7:::;" "$mountpoint/etc/shadow"
 
 echo "- forcing selinux to relabel on first boot"
 touch "$mountpoint/.autorelabel"
