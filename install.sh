@@ -60,7 +60,7 @@ if ! echo "$gateway" | grep -qP '^\d+\.\d+\.\d+\.\d+$'; then
 	exit 1
 fi
 
-if [ "$#" != "7" ]; then
+if [ "$#" == "7" ]; then
 	cpu_cores="$6"
 	if ! [[ "$cpu_cores" =~ "^[0-9]+$" ]]; then
 		echo "The CPU core count $cpu_cores is not a number"
