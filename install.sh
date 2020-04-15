@@ -23,8 +23,8 @@ rpm -q libguestfs-tools-c 2>&1 >/dev/null || dnf install -y libguestfs-tools-c
 #
 # Parameters
 
-if [ "$#" != "5" ]; then
-	echo "Usage: $0 <image path> <vm hostname> <network portgroup> <ip address with mask> <gateway address>"
+if [ "$#" != "5" ] && [ "$#" != "7" ]; then
+	echo "Usage: $0 <image path> <vm hostname> <network portgroup> <ip address with mask> <gateway address> [<cpu cores> <memory in MB>]"
 	echo "For example: $0 /tank/iso/centos8.qcow2 test.tite.fi vlan-123-test 10.0.123.100/24 10.0.123.1"
 	exit 1
 fi
@@ -58,6 +58,22 @@ gateway="$5"
 if ! echo "$gateway" | grep -qP '^\d+\.\d+\.\d+\.\d+$'; then
 	echo "The gateway $gateway does not look like an IP addres (e.g. 10.0.0.1)"
 	exit 1
+fi
+
+if [ "$#" != "7" ]; then
+	cpu_cores="$6"
+	if ! [[ "$cpu_cores" =~ "^[0-9]+$" ]]; then
+		echo "The CPU core count $cpu_cores is not a number"
+		exit 1
+	fi
+	memory_mb="$7"
+	if ! [[ "$memory_mb" =~ "^[0-9]+$" ]]; then
+		echo "The CPU core count $ram_mb is not a number"
+		exit 1
+	fi
+else
+	cpu_cores=2
+	memory_mb=1024
 fi
 
 #
@@ -122,6 +138,7 @@ virt-install --memory 1024 --vcpus 1 \
     --disk $volume_path,device=disk \
     --os-type Linux --os-variant rhel8.1 --virt-type kvm \
     --network "network=$network,model=virtio,virtualport_type=openvswitch,portgroup=$portgroup" \
+    --vcpus $cpu_cores --memory $memory_mb \
     --graphics vnc \
     --import \
     --boot hd \
