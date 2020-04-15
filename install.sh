@@ -62,13 +62,13 @@ fi
 
 if [ "$#" == "7" ]; then
 	cpu_cores="$6"
-	if ! [[ "$cpu_cores" =~ "^[0-9]+$" ]]; then
+	if ! [[ "$cpu_cores" =~ ^[0-9]+$ ]]; then
 		echo "The CPU core count $cpu_cores is not a number"
 		exit 1
 	fi
 	memory_mb="$7"
-	if ! [[ "$memory_mb" =~ "^[0-9]+$" ]]; then
-		echo "The CPU core count $ram_mb is not a number"
+	if ! [[ "$memory_mb" =~ ^[0-9]+$ ]]; then
+		echo "The memory (MB) $memory_mb is not a number"
 		exit 1
 	fi
 else
