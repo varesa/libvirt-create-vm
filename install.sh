@@ -133,7 +133,7 @@ echo ""
 #
 # Create VM
 echo "Creating VM"
-virt-install --memory 1024 --vcpus 1 \
+virt-install \
     --name $name \
     --disk $volume_path,device=disk \
     --os-type Linux --os-variant rhel8.1 --virt-type kvm \
